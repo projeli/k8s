@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: grafana
+  name: grafana
+spec:
+  type: NodePort
+  ports:
+    - name: "3001"
+      port: 3001
+      targetPort: 3000
+      nodePort: 30001
+  selector:
+    io.kompose.service: grafana

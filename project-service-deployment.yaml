@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: project-service
+  name: project-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: project-service
+  template:
+    metadata:
+      labels:
+        io.kompose.service: project-service
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+            - name: Clerk:Authority
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: clerk-authority
+            - name: Clerk:AuthorizedParty
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: clerk-authorized-party
+            - name: Database:ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: postgres-connection-string
+            - name: ENV
+              value: development
+            - name: RabbitMQ:Host
+              value: rabbitmq
+            - name: RabbitMQ:Username
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: rabbitmq-username
+            - name: RabbitMQ:Password
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: rabbitmq-password
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://prometheus
+          image: daqem/projeli:project
+          name: project-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "250m"      # Requests 0.25 core
+              memory: "512Mi"    # Requests 0.5 GiB of memory
+            limits:
+              cpu: "500m"         # Can scale up to 0.5 core
+              memory: "1Gi"    # Can use up to 1 GiB of memory
+      restartPolicy: Always

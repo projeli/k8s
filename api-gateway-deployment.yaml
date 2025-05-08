@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: api-gateway
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: api-gateway
+  template:
+    metadata:
+      labels:
+        io.kompose.service: api-gateway
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+            - name: ENV
+              value: production
+            - name: Routes__0__DownstreamHostAndPorts__0__Port
+              value: '5001'
+            - name: Routes__1__DownstreamHostAndPorts__0__Port
+              value: '5002'
+            - name: Routes__2__DownstreamHostAndPorts__0__Port
+              value: '5003'
+            - name: Routes__3__DownstreamHostAndPorts__0__Port
+              value: '5004'
+            - name: Routes__4__DownstreamHostAndPorts__0__Port
+              value: '5005' 
+          image: daqem/projeli:api-gateway
+          name: api-gateway
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
