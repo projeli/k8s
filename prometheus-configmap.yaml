@@ -41,3 +41,9 @@ data:
       - job_name: 'user-service'
         static_configs:
           - targets: ['user-service:5001']
+      - job_name: 'storage-service'
+        static_configs:
+          - targets: ['storage-service:5004']
+      - job_name: 'notification-service'
+        static_configs:
+          - targets: ['notification-service:5005']
