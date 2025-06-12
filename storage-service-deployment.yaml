@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.kompose.service: user-service
-  name: user-service
+    io.kompose.service: storage-service
+  name: storage-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: user-service
+      io.kompose.service: storage-service
   template:
     metadata:
       labels:
-        io.kompose.service: user-service
+        io.kompose.service: storage-service
     spec:
       containers:
         - env:
@@ -30,11 +30,6 @@ spec:
                 secretKeyRef:
                   name: projeli-secrets
                   key: clerk-authorized-party
-            - name: Database:ConnectionString
-              valueFrom:
-                secretKeyRef:
-                  name: projeli-secrets
-                  key: postgres-connection-string
             - name: ENV
               value: development
             - name: RabbitMQ:Host
@@ -51,8 +46,28 @@ spec:
                   key: rabbitmq-password
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://prometheus
-          image: daqem/projeli:user
-          name: user-service
+            - name: AWS:AccessKey
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: aws-access-key
+            - name: AWS:SecretKey
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: aws-secret-key
+            - name: AWS:ServiceUrl
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: aws-service-url
+            - name: AWS:BucketName
+              valueFrom:
+                secretKeyRef:
+                  name: projeli-secrets
+                  key: aws-bucket-name
+          image: daqem/projeli:storage
+          name: storage-service
           imagePullPolicy: Always
           ports:
             - containerPort: 80
